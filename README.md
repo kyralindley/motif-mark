@@ -35,7 +35,7 @@ In molecular biology, a motif refers to a specific pattern or sequence within a 
 
 ## Examples
 
-![Example Output](Figure_1.fasta)
+![Example Output](./Figure_1.fasta)
 
 ## Contributors
 
