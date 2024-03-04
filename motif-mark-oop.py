@@ -2,18 +2,19 @@
 import argparse
 import re
 import cairo 
+import os
 
 
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--fasta", help="Input fasta", required=True)
-    parser.add_argument("-o","--output", help="Output picture", required=True)
+    
     parser.add_argument("-m",'--motifs',help="Input motif file", required=True)
     return parser.parse_args()
 
 args = get_args()
 f = args.fasta
-o = args.output
+
 m = args.motifs
 ################
 # File handing #
@@ -59,7 +60,7 @@ def draw_legend(ctx, x, y):
     ''' This function draws a legend box with specified items and colors onto a Cairo context. The parameters for this function are the context of the Cairo surface, the x coordinated and y coordinate. '''
     # Define legend items and their corresponding colors
     legend_items = ["gene", "exon", "ygcy", "GUAUG", "catag", "YYYYYYYYYY"]
-    legend_colors = ["black", "green", "pink", "purple", "blue", "black"]
+    legend_colors = ["black", "green", "pink", "purple", "blue", "orange"]
     
     # Set font properties
     ctx.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
@@ -84,8 +85,8 @@ def draw_legend(ctx, x, y):
 
 def cairo_color(color):
     '''Function to convert color name to RGB values'''
-    if color == "black":
-        return (0, 0, 0)
+    if color == "orange":
+        return (1, 0.5, 0)
     elif color == "green":
         return (0, 1, 0)
     elif color == "pink":
@@ -100,7 +101,6 @@ def cairo_color(color):
 ###############
 # OOP Classes #
 ###############
-
 class Gene:
     def __init__(self, name, sequence):
         self.name = name
@@ -110,14 +110,9 @@ class Gene:
         # Set up drawing parameters
         context.set_line_width(1)
         context.set_font_size(10)
-      
 
         # Calculate scaling factors
         scale_x = standard_length / len(self.sequence)
-
-        # Draw gene name slightly above the line
-        context.move_to(10, y + 5)  # Move slightly above the line
-        context.show_text(self.name)
 
         # Base pair line settings
         context.set_source_rgb(0, 0, 0)  # Black color for the base pair lines
@@ -142,6 +137,10 @@ class Gene:
                 context.move_to(10 + i * scale_x, y + 20 - basepair_height / 2)
                 context.line_to(10 + i * scale_x, y + 20 + basepair_height / 2)
                 context.stroke()
+
+        # Draw gene name at the bottom of the gene drawing
+        context.move_to(10, y + 40)  # Move to the bottom of the gene drawing
+        context.show_text(self.name)
 
 class Motif:
     def __init__(self, motif, color):
@@ -168,7 +167,7 @@ motifs = [
     Motif(r'[CTU]GC[CTU]', (1, 0, 1)),   # pink
     Motif(r'GCAUG', (0.5, 0, 0.5)),  # purple
     Motif(r'CATAG', (0, 0, 1)),  # blue
-    Motif(r'[CTU][CTU][CTU][CTU][CTU][CTU][CTU][CTU][CTU][CTU]', (0, 0, 0))  # black
+    Motif(r'[CTU][CTU][CTU][CTU][CTU][CTU][CTU][CTU][CTU][CTU]', (1, 0.5, 0))  # orange
     ]
 
 #############
@@ -176,12 +175,13 @@ motifs = [
 #############
 def main():
     '''This is the main code of the motif-mark-oop.py'''
+    file_prefix = os.path.splitext(os.path.basename(f))[0]
     fasta_data = process_fasta(f)
     genes = [Gene(name, sequence) for name, sequence in fasta_data.items()]
 
     total_gene_height = len(genes) * 100
 
-    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 500, total_gene_height + 200)
+    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 500, total_gene_height + 500)
     context = cairo.Context(surface)
     context.translate(0, 50)
 
@@ -202,12 +202,12 @@ def main():
     legend_y = gene_height * len(genes) + 20
     draw_legend(context, legend_x, legend_y)
 
-    context.move_to(10, 20)
-    context.set_font_size(12)
+    context.move_to(5, 5)
+    context.set_font_size(10)
     context.set_source_rgb(0, 0, 0)  # Black color for the text
     context.show_text("Motif Mark - Kyra Lindley")
 
-    surface.write_to_png(f"{o}.png")
+    surface.write_to_png(f"{file_prefix}.png")
 
 if __name__ == "__main__":
     main()
