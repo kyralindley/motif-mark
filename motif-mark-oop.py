@@ -59,7 +59,7 @@ def process_fasta(file:str):
 def draw_legend(ctx, x, y):
     ''' This function draws a legend box with specified items and colors onto a Cairo context. The parameters for this function are the context of the Cairo surface, the x coordinated and y coordinate. '''
     # Define legend items and their corresponding colors
-    legend_items = ["gene", "exon", "ygcy", "GUAUG", "catag", "YYYYYYYYYY"]
+    legend_items = ["gene", "exon", "ygcy", "GUATG", "catag", "YYYYYYYYYY"]
     legend_colors = ["black", "green", "pink", "purple", "blue", "orange"]
     
     # Set font properties
@@ -165,7 +165,7 @@ class Motif:
 # make the motifs different colors 
 motifs = [
     Motif(r'[CTU]GC[CTU]', (1, 0, 1)),   # pink
-    Motif(r'GCAUG', (0.5, 0, 0.5)),  # purple
+    Motif(r'GCATG', (0.5, 0, 0.5)),  # purple
     Motif(r'CATAG', (0, 0, 1)),  # blue
     Motif(r'[CTU][CTU][CTU][CTU][CTU][CTU][CTU][CTU][CTU][CTU]', (1, 0.5, 0))  # orange
     ]
